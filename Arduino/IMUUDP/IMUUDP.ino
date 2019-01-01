@@ -55,7 +55,7 @@ void loop() {
         Serial.println(packetBuffer);
 
         // send a reply to the IP address and port that sent us the packet we received
-        UDP.beginPacket(UDP.remoteIP(), UDPPort);
+        UDP.beginPacket(UDPBroadcast, UDPPort);
         UDP.write(ReplyBuffer);
         UDP.endPacket();
       }
