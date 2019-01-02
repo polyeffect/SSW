@@ -1,11 +1,6 @@
 #include <ESP8266WiFi.h>
 #include <WiFiUDP.h>
 
-int inputPin = D7;
-int outputPin = D4;
-int val = 0;
-boolean pressState = false;
-
 // wi-fi connection variables
 const char* ssid = "ssw";
 const char* password = "ssw112233";
@@ -20,8 +15,16 @@ WiFiUDP UDP;
 boolean udpConnected = false;
 char packetBuffer[UDP_TX_PACKET_MAX_SIZE];
 
+// variables
 char ReplyBuffer[] = "D1 MINI PINK";
-char sendBuffer[] = "reed";
+int val1 = 0;
+int val2 = 0;
+int val3 = 0;
+int val4 = 0;
+boolean pressState1 = false;
+boolean pressState2 = false;
+boolean pressState3 = false;
+boolean pressState4 = false;
 
 void setup() {
   Serial.begin(115200);
@@ -32,8 +35,10 @@ void setup() {
     if (udpConnected) {
       // PIN setup
       pinMode(BUILTIN_LED, OUTPUT);
-      pinMode(outputPin, OUTPUT);
-      pinMode(inputPin, INPUT);
+      pinMode(D5, INPUT);
+      pinMode(D6, INPUT);
+      pinMode(D7, INPUT);
+      pinMode(D8, INPUT);
     }
   }
 }
@@ -70,19 +75,57 @@ void loop() {
 
       // interaction
       // button
-      val = digitalRead(inputPin);
+      val1 = digitalRead(D5);
+      val2 = digitalRead(D6);
+      val3 = digitalRead(D7);
+      val4 = digitalRead(D8);
 
-      if (val == 1 && !pressState) {
-        digitalWrite(BUILTIN_LED, val);
-        digitalWrite(outputPin, val);
+      if (val1 == 1 && !pressState1) {
+        digitalWrite(BUILTIN_LED, val1);
+        char sendBuffer[] = "i01";
         UDP.beginPacket(UDPBroadcast, UDPPort);
         UDP.write(sendBuffer);
         UDP.endPacket();
-        pressState = true;
-      } else if (val == 0 && pressState) {
-        digitalWrite(BUILTIN_LED, val);
-        digitalWrite(outputPin, val);
-        pressState = false;
+        pressState1 = true;
+      } else if (val1 == 0 && pressState1) {
+        digitalWrite(BUILTIN_LED, val1);
+        pressState1 = false;
+      }
+
+      if (val2 == 1 && !pressState2) {
+        digitalWrite(BUILTIN_LED, val2);
+        char sendBuffer[] = "i02";
+        UDP.beginPacket(UDPBroadcast, UDPPort);
+        UDP.write(sendBuffer);
+        UDP.endPacket();
+        pressState2 = true;
+      } else if (val2 == 0 && pressState2) {
+        digitalWrite(BUILTIN_LED, val2);
+        pressState2 = false;
+      }
+
+      if (val3 == 1 && !pressState3) {
+        digitalWrite(BUILTIN_LED, val3);
+        char sendBuffer[] = "i03";
+        UDP.beginPacket(UDPBroadcast, UDPPort);
+        UDP.write(sendBuffer);
+        UDP.endPacket();
+        pressState3 = true;
+      } else if (val3 == 0 && pressState3) {
+        digitalWrite(BUILTIN_LED, val3);
+        pressState3 = false;
+      }
+
+      if (val4 == 1 && !pressState4) {
+        digitalWrite(BUILTIN_LED, val4);
+        char sendBuffer[] = "i04";
+        UDP.beginPacket(UDPBroadcast, UDPPort);
+        UDP.write(sendBuffer);
+        UDP.endPacket();
+        pressState4 = true;
+      } else if (val4 == 0 && pressState4) {
+        digitalWrite(BUILTIN_LED, val4);
+        pressState4 = false;
       }
     }
   }
