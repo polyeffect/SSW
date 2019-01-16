@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class AlpahSequenceTextureArray : MonoBehaviour
 {
+    public string crtScene; //
+    public GameObject bgScreen;
+
+    // Sequence Play
     public string sequencePath;
     public float delayTime = 0.01f;
 
@@ -15,13 +19,15 @@ public class AlpahSequenceTextureArray : MonoBehaviour
 
     private void Awake()
     {
-        this.goMaterial = this.GetComponent<Renderer>().material;
+        bgScreen = GameObject.Find("Summer");
+        this.goMaterial = bgScreen.GetComponent<Renderer>().material;
+        //this.goMaterial = this.GetComponent<Renderer>().material;
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        this.objects = Resources.LoadAll("Sequence/" + sequencePath, typeof(Texture));
+        this.objects = Resources.LoadAll("Sequence/Chapter3/" + sequencePath, typeof(Texture));
         this.textures = new Texture[objects.Length];
 
         maxFrameCounter = objects.Length;
@@ -36,11 +42,21 @@ public class AlpahSequenceTextureArray : MonoBehaviour
     void Update()
     {
         StartCoroutine("PlayOnce", delayTime);
-
         goMaterial.SetTexture("_Mask", textures[frameCounter]);
     }
 
-    // A mrthod to play the sequence in a loop
+    public void ChangeScene(string _scene)
+    {
+        frameCounter = 0;
+        bgScreen = GameObject.Find(_scene);
+        this.goMaterial = bgScreen.GetComponent<Renderer>().material;
+    }
+
+
+    /****************************
+     * Sequence play method
+     ***************************/
+    // A method to play the sequence in a loop
     IEnumerator PlayLoop(float delay)
     {
         yield return new WaitForSeconds(delay);

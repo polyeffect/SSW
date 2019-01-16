@@ -18,6 +18,7 @@ public class FPSDisplay : MonoBehaviour
     void Update()
     {
         deltaTime += (Time.unscaledDeltaTime - deltaTime) * 0.1f;
+        
     }
 
     void OnGUI()
@@ -33,7 +34,7 @@ public class FPSDisplay : MonoBehaviour
         while(true)
         {
             yield return new WaitForSeconds(5.0f);
-            wfps = 100.0f;
+            wfps = 200.0f;
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class Initialize : MonoBehaviour
 {
@@ -18,21 +17,5 @@ public class Initialize : MonoBehaviour
         QualitySettings.asyncUploadPersistentBuffer = true;
 
         Screen.SetResolution(2800, 800, true);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    public void PrevScene()
-    {
-        SceneManager.LoadScene("Main");
-    }
-
-    public void NextScene()
-    {
-        SceneManager.LoadScene("SequenceTest");
     }
 }

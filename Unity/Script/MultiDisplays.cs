@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class MultiDisplays : MonoBehaviour
 {
-    // Start is called before the first frame update
     void Start()
     {
         Debug.Log("displays connected: " + Display.displays.Length);
@@ -16,7 +15,6 @@ public class MultiDisplays : MonoBehaviour
             Display.displays[2].Activate();
     }
 
-    // Update is called once per frame
     void Update()
     {
         

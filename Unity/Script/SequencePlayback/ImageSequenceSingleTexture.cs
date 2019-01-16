@@ -12,8 +12,8 @@ public class ImageSequenceSingleTexture : MonoBehaviour
     public string sequencePath;
     public string imageSequenceName;
     public int numberOfFrames;
-    public string startNumber;
-    private int sn;
+    //public string startNumber;
+    //private int sn;
 
     private string baseName;
 
@@ -25,8 +25,8 @@ public class ImageSequenceSingleTexture : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        texture = (Texture)Resources.Load(baseName + startNumber, typeof(Texture));
-        sn = int.Parse(startNumber);
+        texture = (Texture)Resources.Load(baseName + "00000", typeof(Texture));
+        //sn = int.Parse(startNumber);
     }
 
     // Update is called once per frame
@@ -44,10 +44,10 @@ public class ImageSequenceSingleTexture : MonoBehaviour
 
         //advance one frame  
         frameCounter = (++frameCounter) % numberOfFrames;
-        fc = frameCounter + sn;
+        //fc = frameCounter + sn;
 
         //load the current frame  
-        this.texture = (Texture)Resources.Load(baseName + fc.ToString("D5"), typeof(Texture));
+        this.texture = (Texture)Resources.Load(baseName + frameCounter.ToString("D5"), typeof(Texture));
 
         //Stop this coroutine  
         StopCoroutine("PlayLoop");
