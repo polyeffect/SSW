@@ -110,7 +110,6 @@ public class PoemSequencePlayback : MonoBehaviour
 
     public void OutroMaskPlay()
     {
-        tracetext.InputTraceText("Poem Outro Mask Play!");
         isIntroPlay = false;
         isOutroPlay = true;
     }

@@ -5,24 +5,35 @@ using UnityEngine;
 public class ChapterControl : MonoBehaviour
 {
     private TraceText traceText;
-    private VideoEvent videoEvent;
-    private ImageSequencePlayback imgSqcPlayback;
+    private UDPEventModule udpEventModule;
 
+    private VideoEvent videoEvent; // Chapter1 Video Playback
+    private GameObject sequenceScreen; // Chapter2 Sequence Screen (just screen)
+    private ImageSequencePlayback imgSqcPlayback; // Chapter2 Sequence Playback
+    private SceneController sceneController; // Chapter3 Poem Playback (Scene Controller)
+
+    public GameObject initScene;
     public GameObject chapter1;
     public GameObject chapter2;
     public GameObject chapter3;
 
-    private int prvChapterNum = 1;
-    private int crtChapterNum = 3;
+    private int crtChapterNum = 1;
+
+    private bool isInit = false;
 
     void Start()
     {
-        //StartCoroutine(ChapterInit());
+        
         traceText = GameObject.Find("TraceText").GetComponent<TraceText>();
-        //videoEvent = GameObject.Find("Video Player").GetComponent<VideoEvent>();
-        //imgSqcPlayback = GameObject.Find("Sequence Screen").GetComponent<ImageSequencePlayback>();
+        udpEventModule = GameObject.Find("UDPComm").GetComponent<UDPEventModule>();
 
-        SetCrtChapter();
+        // All Chapters Playback initialize
+        videoEvent = GameObject.Find("Video Player").GetComponent<VideoEvent>();
+        sequenceScreen = GameObject.Find("Sequence Screen");
+        imgSqcPlayback = GameObject.Find("Sequence Screen").GetComponent<ImageSequencePlayback>();
+        sceneController = GameObject.Find("Scene Controller").GetComponent<SceneController>();
+
+        StartCoroutine(ChapterInit());
     }
 
     void Update()
@@ -30,31 +41,12 @@ public class ChapterControl : MonoBehaviour
         
     }
 
-    public void PrevChapter()
-    {
-        crtChapterNum--;
-        if (crtChapterNum < 1) crtChapterNum = 3;
-    }
-
     public void NextChapter()
     {
         crtChapterNum++;
         if (crtChapterNum > 3) crtChapterNum = 1;
 
-        GameObject.Find("TraceText").SendMessage("InputTraceText", "Current chapter: " + crtChapterNum);
-
-        if (crtChapterNum == 1)
-        {
-            ChapterOneStart();
-        }
-        else if (crtChapterNum == 2)
-        {
-            ChapterTwoStart();
-        }
-        else if (crtChapterNum == 3)
-        {
-            ChapterThreeStart();
-        }
+        SetCrtChapter(crtChapterNum);
     }
 
     public int GetCrtChapter()
@@ -62,23 +54,28 @@ public class ChapterControl : MonoBehaviour
         return crtChapterNum;
     }
 
-    public void SetCrtChapter()
+    public void SetCrtChapter(int _num)
     {
-        switch (crtChapterNum)
+        switch (_num)
         {
             case 1 :
+                ChapterOneStart();
+                UDPEventSetChapterNum(_num);
                 break;
             case 2 :
+                ChapterTwoStart();
+                UDPEventSetChapterNum(_num);
                 break;
             case 3 :
                 ChapterThreeStart();
+                UDPEventSetChapterNum(_num);
                 break;
         }
     }
 
-    private void SceneControl()
+    private void UDPEventSetChapterNum(int _num)
     {
-
+        udpEventModule.SetChapterNum(_num);
     }
 
     /***************************
@@ -88,13 +85,16 @@ public class ChapterControl : MonoBehaviour
     private void ChapterOneStart()
     {
         // Chapter3 Fade Out & Deactivate
-        GameObject.Find("Audio System").SendMessage("ChapterThreeBGMPlay");
+        if (isInit) GameObject.Find("Audio System").SendMessage("ChapterThreeBGMPlay");
 
-        // Chapter1 Video activate & Video play
-        //videoEvent.VideoPlayControl();
+        // Chapter1 Video Activate & Video Play
+        videoEvent.VideoPlayControl();
 
         // Chpater2 Activate (Ready for Chapter2 play)
+        sequenceScreen.SetActive(true);
+        imgSqcPlayback.FadeInAndActivate();
 
+        isInit = true;
     }
 
     // Chapter2. Start
@@ -108,8 +108,21 @@ public class ChapterControl : MonoBehaviour
     // Chapter3. Start
     private void ChapterThreeStart()
     {
+        // About Chapter2.
         // Chapter2 Fade out & Deactivate
-        //imgSqcPlayback.SequencePlayControl();
+        imgSqcPlayback.SequenceFadeOutAndDeactivate();
+
+        // Chapter2 BGM Stop
+        //GameObject.Find("Audio System").SendMessage("ChapterTwoBGMPlay");
+
+
+        // About Chapter3.
+        // Chapter3 Activate
+        chapter3.SetActive(true);
+
+        // Chapter3 Initialize
+        sceneController.InitScene();
+        udpEventModule.ResetCounter();
 
         // Chapter3 BGM Play
         GameObject.Find("Audio System").SendMessage("ChapterThreeBGMPlay");
@@ -120,9 +133,12 @@ public class ChapterControl : MonoBehaviour
     {
         yield return new WaitForSeconds(5f);
 
+        initScene.SetActive(false);
         chapter1.SetActive(true);
         chapter2.SetActive(true);
         chapter3.SetActive(false);
+
+        SetCrtChapter(crtChapterNum);
 
         StopCoroutine(ChapterInit());
     }

@@ -9,7 +9,7 @@ public class SceneController : MonoBehaviour
 
     private string[] allSceneName = new string[] { "Summer", "Night", "Fall", "Winter" };
     private string crtSceneName = "Summer";
-    private string prvSceneName = "Summer";
+    private string prvSceneName = "Night";
     
     private string data;
 
@@ -22,10 +22,7 @@ public class SceneController : MonoBehaviour
         poemSequencePlayback = GameObject.Find("Poem Screen").GetComponent<PoemSequencePlayback>();
         alphaSequenceTextureArray = GameObject.Find("BG Alpha Mask").GetComponent<AlpahSequenceTextureArray>();
 
-        frontScene = GameObject.Find("Summer");
-        rearScene = GameObject.Find("Night");
-
-        InitScene();
+        //InitScene();
     }
 
     void Update()
@@ -33,11 +30,18 @@ public class SceneController : MonoBehaviour
         
     }
 
-    void InitScene()
+    public void InitScene()
     {
-        frontScene.transform.position = new Vector3(0, 0, 1);
+        frontScene = GameObject.Find(crtSceneName);
+        rearScene = GameObject.Find(prvSceneName);
+
         frontScene.SendMessage("ResetFrame");
+        rearScene.SendMessage("ResetFrame");
+
+        frontScene.transform.position = new Vector3(0, 0, 1);
         rearScene.transform.position = new Vector3(0, 0, 2);
+
+        //ReceiveData("i01");
     }
 
     public void ReceiveData(string _data)
@@ -140,7 +144,8 @@ public class SceneController : MonoBehaviour
             rearScene = GameObject.Find(prvSceneName);
             frontScene.SendMessage("ResetFrame");
             rearScene.SendMessage("StopLoopCounter");
-            
+            rearScene.SendMessage("SetAlphaTexture");
+
             frontScene.transform.position = new Vector3(0, 0, 2);
             rearScene.transform.position = new Vector3(0, 0, 3);
             alphaSequenceTextureArray.ChangeScene(crtSceneName);
@@ -151,9 +156,14 @@ public class SceneController : MonoBehaviour
                 {
                     backScene = GameObject.Find(allSceneName[i]);
                     backScene.SendMessage("StopLoopCounter");
+                    backScene.SendMessage("StopPlayingSequence");
                     backScene.transform.position = new Vector3(0, 0, 4);
                 }
             }
+        }
+        else
+        {
+            frontScene.SendMessage("ResetLoopCounter");
         }
 
         prvSceneName = crtSceneName;

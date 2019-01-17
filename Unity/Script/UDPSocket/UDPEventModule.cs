@@ -9,44 +9,57 @@ public class UDPEventModule : MonoBehaviour
     private SceneController sceneController;
     private ImageSequencePlayback imageSequencePlayback;
 
-    private int chapterNum = 2;
+    private int chapterNum = 1;
 
     private string data;
     private string prvData = "null";
     private string crtData = "null";
 
-    public int maxCount = 3;
+    private string[] allSceneName = new string[] { "imuReverse", "imuIdle", "imuObverse" };
+
+    public int maxCount = 5;
     private uint count = 0;
 
     void Start()
     {
-        print("UDPEventModule Init!!!!");
-
         // trace text
         traceText = GameObject.Find("TraceText").GetComponent<TraceText>();
 
         // Chpater Controller
         chapterControl = GameObject.Find("Init").GetComponent<ChapterControl>();
-        chapterNum = chapterControl.GetCrtChapter();
 
         // Chapter 2 Controller
-        //imageSequencePlayback = GameObject.Find("Sequence Screen").GetComponent<ImageSequencePlayback>();
+        imageSequencePlayback = GameObject.Find("Sequence Screen").GetComponent<ImageSequencePlayback>();
 
         // Chapter 3 COntroller
-        sceneController = GameObject.Find("SceneController").GetComponent<SceneController>();
+        sceneController = GameObject.Find("Scene Controller").GetComponent<SceneController>();
+    }
+
+    public void SetChapterNum(int _num)
+    {
+        chapterNum = _num;
     }
 
     // UDP data from UDPReceive.cs
     public void UDPDataReceiver(string _data)
     {
-        switch (chapterNum)
+        if (chapterNum == 2)
         {
-            case 2:
+            if(_data == "imuReverse" || _data == "imuIdle" || _data == "imuObverse")
+            {
                 ChapterTwoControl(_data);
-                break;
-            case 3:
+            }
+        }
+        else if (chapterNum == 3)
+        {
+            if (_data == "imuReverse" || _data == "imuIdle" || _data == "imuObverse")
+            {
+                
+            }
+            else
+            {
                 ChapterThreeControl(_data);
-                break;
+            }
         }
     }
 
@@ -58,7 +71,7 @@ public class UDPEventModule : MonoBehaviour
         if (crtData != prvData)
         {
             // Send data to chapter2 sequence controller
-            traceText.InputTraceText("Send data to Chapter 2.: " + _data);
+            //traceText.InputTraceText("Send data to Chapter 2.: " + _data);
             imageSequencePlayback.ReceiveData(_data);
         }
 
@@ -77,7 +90,7 @@ public class UDPEventModule : MonoBehaviour
             if (count == maxCount)
             {
                 // Send data to chapter3 scene controller
-                traceText.InputTraceText("Send data to Chpater 3.: " + _data);
+                //traceText.InputTraceText("Send data to Chpater 3.: " + _data);
                 sceneController.ReceiveData(_data);
             }
         }
@@ -88,5 +101,10 @@ public class UDPEventModule : MonoBehaviour
 
         //print("UDP data receiver: " + _data + ", " + "Receive Count: " + count);
         this.prvData = _data;
+    }
+
+    public void ResetCounter()
+    {
+        count = 0;
     }
 }

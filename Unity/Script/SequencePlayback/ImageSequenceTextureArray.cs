@@ -10,13 +10,15 @@ public class ImageSequenceTextureArray : MonoBehaviour
     public string sequencePath;
     public float delayTime = 0.01f;
 
+    private bool isPlay = false;
     private Object[] objects;
     private Texture[] textures;
     private Material goMaterial;
     private int frameCounter = 0;
+    public Texture alphaTexture;
+
     private int loopCounter = 0;
     private int maxLoopCounter = 2;
-
     private bool isLoopCount = false;
 
     private void Awake()
@@ -40,29 +42,44 @@ public class ImageSequenceTextureArray : MonoBehaviour
 
     void Update()
     {
-        StartCoroutine("PlayLoop", delayTime);
+        if (isPlay) StartCoroutine("PlayLoop", delayTime);
         goMaterial.mainTexture = textures[frameCounter];
-        
     }
 
     public void ResetFrame()
     {
-        traceText.InputTraceText("Front Scene Reset Frame: " + this.gameObject.name);
+        //traceText.InputTraceText("Front Scene Reset Frame: " + this.gameObject.name);
         frameCounter = 0;
+        isPlay = true; // Start Sequence Playing
         isLoopCount = true;
         loopCounter = 0;
     }
 
+    public void SetAlphaTexture()
+    {
+        goMaterial.SetTexture("_Mask", alphaTexture);
+    }
+
+    public void StopPlayingSequence()
+    {
+        isPlay = false; // Stop Sequence Playing
+    }
+
     public void StopLoopCounter()
     {
-        traceText.InputTraceText("Stop Loop Counter: " + this.gameObject.name);
+        //traceText.InputTraceText("Stop Loop Counter: " + this.gameObject.name);
         isLoopCount = false;
         loopCounter = 0;
     }
 
+    public void ResetLoopCounter()
+    {
+        loopCounter = -1;
+    }
+
     private void GoNextChapter()
     {
-        traceText.InputTraceText("Go Chapter1 from 3");
+        //traceText.InputTraceText("Go Chapter1 from 3");
         isLoopCount = false;
         loopCounter = 0;
         chapterControl.NextChapter();

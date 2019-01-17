@@ -12,11 +12,12 @@ public class VideoEvent : MonoBehaviour
     public VideoPlayer vp;
     public GameObject videoScreen;
     public RenderTexture renderTexture;
+    public GameObject chapter3;
 
     private TraceText traceText;
 
     // fade and destroy
-    bool isPlay = true;
+    bool isPlay = false;
     float alpha = 1.0f;
     Renderer renderer;
     Color currColor;
@@ -26,8 +27,7 @@ public class VideoEvent : MonoBehaviour
         traceText = GameObject.Find("TraceText").GetComponent<TraceText>();
         chapterControl = GameObject.Find("Init").GetComponent<ChapterControl>();
 
-        // Detect end of video clip
-        vp.loopPointReached += DetectVideoEnd;
+        
 
         renderer = videoScreen.GetComponent<Renderer>();
         currColor = renderer.material.color;
@@ -52,6 +52,10 @@ public class VideoEvent : MonoBehaviour
             isPlay = !isPlay;
             traceText.InputTraceText("Video fade in and Actiate");
             VideoReplay();
+
+            // Detect end of video clip
+            
+            vp.loopPointReached += DetectVideoEnd;
         }
     }
 
@@ -88,6 +92,8 @@ public class VideoEvent : MonoBehaviour
 
             yield return null;
         }
+
+        chapter3.SetActive(false);
     }
 
     // Play Video clip again
@@ -102,9 +108,12 @@ public class VideoEvent : MonoBehaviour
     // Dectect end of video clip
     void DetectVideoEnd(UnityEngine.Video.VideoPlayer vp)
     {
-        isPlay = false;
-        traceText.InputTraceText("Video is Over.");
-        StartCoroutine(FadeOutAndDeactivate());
-        chapterControl.NextChapter();
+        if (isPlay)
+        {
+            isPlay = false;
+            traceText.InputTraceText("Video is Over.");
+            StartCoroutine(FadeOutAndDeactivate());
+            chapterControl.NextChapter();
+        }
     }
 }

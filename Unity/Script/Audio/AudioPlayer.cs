@@ -43,6 +43,7 @@ public class AudioPlayer : MonoBehaviour
                 {
                     traceText.InputTraceText("Chapter3 Play");
                     isPlay = false;
+                    crtLoopCount = 0;
                     chapterControl.NextChapter();
                 }
             }

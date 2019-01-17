@@ -102,7 +102,7 @@ public class ImageSequencePlayback : MonoBehaviour
         if(isRevers != revers)
         {
             this.isRevers = revers;
-            targetSpeed = 0.06f;
+            targetSpeed = 0.05f;
         }
     }
 
@@ -117,21 +117,30 @@ public class ImageSequencePlayback : MonoBehaviour
         isPlaying = false;
     }
 
-    public void SequencePlayControl()
+    public void SequenceFadeOutAndDeactivate()
     {
-        if (isPlaying)
-        {
-            traceText.InputTraceText("Sequence fade out and Deactivate");
-            StartCoroutine(FadeOutAndDeactivate());
-        }
-        else
-        {
-
-        }
-
-        //isPlaying = !isPlaying;
+        traceText.InputTraceText("Sequence fade out and deactivate");
+        StartCoroutine(FadeOutAndDeactivate());
     }
 
+
+    /****************************
+     * Fade in & Fade out
+     ***************************/
+    // Fade in and Activate
+    public void FadeInAndActivate()
+    {
+        Invoke("ShowSequenceScreen", 5.0f);
+    }
+
+    private void ShowSequenceScreen()
+    {
+        alpha = 1.0f;
+        currColor.a = alpha;
+        renderer.material.color = currColor;
+    }
+
+    // Fade out and Deactivate
     IEnumerator FadeOutAndDeactivate()
     {
         while (alpha > 0.0f)
