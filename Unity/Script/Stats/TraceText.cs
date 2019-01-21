@@ -15,6 +15,7 @@ public class TraceText : MonoBehaviour
     public void InputTraceText(string _text)
     {
         print(_text);
-        debugText.text += _text + "\n";
+        string date = System.DateTime.Now.ToString("hh:mm:ss");
+        debugText.text += "[" + date + "] " + _text + "\n";
     }
 }

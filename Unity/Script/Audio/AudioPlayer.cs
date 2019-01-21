@@ -13,7 +13,7 @@ public class AudioPlayer : MonoBehaviour
     private float fadeTimer = 4f;
 
     // Chapter 2.
-    public int maxLoopCount = 2;
+    private int maxLoopCount = 1;
     private int crtLoopCount = 0;
     private bool isPlay = false;
 
@@ -76,8 +76,6 @@ public class AudioPlayer : MonoBehaviour
         }
     }
 
-
-
     public void SoundControl(int index)
     {
         if(index == 1)
@@ -103,6 +101,5 @@ public class AudioPlayer : MonoBehaviour
                 audioSourceTwo.Stop();
             }
         }
-        
     }
 }

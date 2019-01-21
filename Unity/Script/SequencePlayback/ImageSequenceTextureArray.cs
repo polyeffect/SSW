@@ -77,7 +77,7 @@ public class ImageSequenceTextureArray : MonoBehaviour
         loopCounter = -1;
     }
 
-    private void GoNextChapter()
+    public void GotoNextChapter()
     {
         //traceText.InputTraceText("Go Chapter1 from 3");
         isLoopCount = false;
@@ -97,7 +97,7 @@ public class ImageSequenceTextureArray : MonoBehaviour
         {
             loopCounter++;
             traceText.InputTraceText("Chapter3 Scene Loop Counter: " + loopCounter + ", " + this.gameObject.name);
-            if (loopCounter >= maxLoopCounter) GoNextChapter();
+            if (loopCounter >= maxLoopCounter) GotoNextChapter();
         }
         StopCoroutine("PlayLoop");
     }

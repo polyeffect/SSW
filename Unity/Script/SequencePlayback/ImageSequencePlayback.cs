@@ -12,10 +12,9 @@ public class ImageSequencePlayback : MonoBehaviour
 
     public string sequencePath;
 
-    //public float delayTime = 0.01f;
     public float easing = 0.02f;
-    private float targetSpeed = 0.03f;
-    private float currentSpeed = 0.03f;
+    private float targetSpeed = 0.01f;
+    private float currentSpeed = 0.01f;
 
     private bool isPlaying = false;
     private bool isRevers = false;
@@ -57,11 +56,10 @@ public class ImageSequencePlayback : MonoBehaviour
         if (isPlaying) {
             float delaySpeed = targetSpeed - currentSpeed;
             currentSpeed += delaySpeed * easing;
-            //print(currentSpeed + ", " + targetSpeed);
 
             if (currentSpeed >= targetSpeed - 0.001f)
             {
-                targetSpeed = 0.03f;
+                targetSpeed = 0.01f;
                 if (isRevers) speedRevers = true;
                 else speedRevers = false;
             }
@@ -119,7 +117,7 @@ public class ImageSequencePlayback : MonoBehaviour
 
     public void SequenceFadeOutAndDeactivate()
     {
-        traceText.InputTraceText("Sequence fade out and deactivate");
+        traceText.InputTraceText("Chapter2 Sequence fade out and deactivate");
         StartCoroutine(FadeOutAndDeactivate());
     }
 

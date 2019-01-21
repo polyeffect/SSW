@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class SceneController : MonoBehaviour
 {
+    private TraceText traceText;
     private PoemSequencePlayback poemSequencePlayback;
     private AlpahSequenceTextureArray alphaSequenceTextureArray;
 
@@ -19,15 +20,9 @@ public class SceneController : MonoBehaviour
 
     void Start()
     {
+        traceText = GameObject.Find("TraceText").GetComponent<TraceText>();
         poemSequencePlayback = GameObject.Find("Poem Screen").GetComponent<PoemSequencePlayback>();
         alphaSequenceTextureArray = GameObject.Find("BG Alpha Mask").GetComponent<AlpahSequenceTextureArray>();
-
-        //InitScene();
-    }
-
-    void Update()
-    {
-        
     }
 
     public void InitScene()
@@ -37,11 +32,13 @@ public class SceneController : MonoBehaviour
 
         frontScene.SendMessage("ResetFrame");
         rearScene.SendMessage("ResetFrame");
+        if (crtSceneName != prvSceneName) rearScene.SendMessage("StopLoopCounter");
 
         frontScene.transform.position = new Vector3(0, 0, 1);
         rearScene.transform.position = new Vector3(0, 0, 2);
 
-        //ReceiveData("i01");
+        traceText.InputTraceText("Next Chapter Invoke Start");
+        Invoke("GotoNextChapter", 600f);
     }
 
     public void ReceiveData(string _data)
@@ -172,5 +169,21 @@ public class SceneController : MonoBehaviour
     public void ChangePoem(int _num)
     {
         poemSequencePlayback.ChangePoem(_num);
+    }
+
+    /****************************
+    * Next Chapter method (Invoke)
+    ***************************/
+    // Reset Invoke (Stop Timer)
+    public void StopInvoke()
+    {
+        CancelInvoke("GotoNextChapter");
+    }
+
+    // Go to The Next Chapter During Interaction
+    private void GotoNextChapter()
+    {
+        traceText.InputTraceText("Go to The Next Chapter During Interaction");
+        frontScene.SendMessage("GotoNextChapter");
     }
 }

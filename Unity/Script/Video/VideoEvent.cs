@@ -27,8 +27,6 @@ public class VideoEvent : MonoBehaviour
         traceText = GameObject.Find("TraceText").GetComponent<TraceText>();
         chapterControl = GameObject.Find("Init").GetComponent<ChapterControl>();
 
-        
-
         renderer = videoScreen.GetComponent<Renderer>();
         currColor = renderer.material.color;
     }
@@ -54,7 +52,6 @@ public class VideoEvent : MonoBehaviour
             VideoReplay();
 
             // Detect end of video clip
-            
             vp.loopPointReached += DetectVideoEnd;
         }
     }

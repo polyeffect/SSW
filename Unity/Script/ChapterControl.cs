@@ -23,7 +23,6 @@ public class ChapterControl : MonoBehaviour
 
     void Start()
     {
-        
         traceText = GameObject.Find("TraceText").GetComponent<TraceText>();
         udpEventModule = GameObject.Find("UDPComm").GetComponent<UDPEventModule>();
 
@@ -34,11 +33,6 @@ public class ChapterControl : MonoBehaviour
         sceneController = GameObject.Find("Scene Controller").GetComponent<SceneController>();
 
         StartCoroutine(ChapterInit());
-    }
-
-    void Update()
-    {
-        
     }
 
     public void NextChapter()
@@ -85,7 +79,11 @@ public class ChapterControl : MonoBehaviour
     private void ChapterOneStart()
     {
         // Chapter3 Fade Out & Deactivate
-        if (isInit) GameObject.Find("Audio System").SendMessage("ChapterThreeBGMPlay");
+        if (isInit)
+        {
+            GameObject.Find("Audio System").SendMessage("ChapterThreeBGMPlay");
+            sceneController.StopInvoke();
+        }
 
         // Chapter1 Video Activate & Video Play
         videoEvent.VideoPlayControl();
