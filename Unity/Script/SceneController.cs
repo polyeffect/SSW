@@ -168,7 +168,7 @@ public class SceneController : MonoBehaviour
 
     public void ChangePoem(int _num)
     {
-        poemSequencePlayback.ChangePoem(_num);
+        poemSequencePlayback.SetNextPoem(_num);
     }
 
     /****************************

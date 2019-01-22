@@ -4,24 +4,23 @@ using UnityEngine;
 
 public class PoemSequencePlayback : MonoBehaviour
 {
-    private TraceText tracetext;
-
-    public float delayTime = 0.01f;
-    public string sequencePath;
-    public string introMaskPath;
-    public string outroMaskPath;
-    //public string imageSequenceName;
-    public int poemNumber = 1;
-
-    private float introDelayTime = 1f;
-    private float poemIdleTime = 15f;
+    public float delayTime = 0.005f; // 45fps
 
     // Poem
+    private string crtPoemState = "idle";
+    private int crtPoemNumber = 1;
+    private int nxtPoemNumber = 1;
+
+    private float introDelayTime = 0.1f;
+    private float poemIdleTime = 15f;
+
+    private string baseName;
     private Texture texture;
     private Material goMaterial;
-    
 
     // Alpha
+    public string introMaskPath;
+    public string outroMaskPath;
     private Object[] introMaskObjects;
     private Object[] outroMaskObjects;
     private Texture[] introMaskTextures;
@@ -29,10 +28,9 @@ public class PoemSequencePlayback : MonoBehaviour
     private int inFrameCounter = 0;
     private int outFrameCounter = 0;
 
-    private string baseName;
-
     private bool isIntroPlay = false;
     private bool isOutroPlay = false;
+    private bool isDirectOutro = false;
 
     IEnumerator outroMaskAutoplay;
 
@@ -44,9 +42,7 @@ public class PoemSequencePlayback : MonoBehaviour
 
     void Start()
     {
-        tracetext = GameObject.Find("Init").GetComponent<TraceText>();
-
-        SetPoem();
+        SetCurrentPoem();
 
         // Intro Mask
         this.introMaskObjects = Resources.LoadAll("Sequence/Chapter3/Poem/" + introMaskPath, typeof(Texture));
@@ -63,8 +59,6 @@ public class PoemSequencePlayback : MonoBehaviour
         {
             this.outroMaskTextures[i] = (Texture)this.outroMaskObjects[i];
         }
-
-        
     }
 
     void Update()
@@ -82,10 +76,15 @@ public class PoemSequencePlayback : MonoBehaviour
         }
     }
 
-    public void SetPoem()
+    public void SetCurrentPoem()
     {
-        texture = (Texture)Resources.Load(baseName + poemNumber.ToString("D2") + "_00000", typeof(Texture));
+        texture = (Texture)Resources.Load(baseName + crtPoemNumber.ToString("D2") + "_00000", typeof(Texture));
         goMaterial.mainTexture = this.texture;
+    }
+
+    public void SetNextPoem()
+    {
+
     }
 
     /****************************
@@ -104,12 +103,13 @@ public class PoemSequencePlayback : MonoBehaviour
     {
         isIntroPlay = true;
         isOutroPlay = false;
-        outroMaskAutoplay = OutroMaskAutoplay();
-        StartCoroutine(outroMaskAutoplay);
+        Invoke("OutroMaskPlay", 15.0f);
     }
 
     public void OutroMaskPlay()
     {
+        crtPoemState = "out";
+
         isIntroPlay = false;
         isOutroPlay = true;
     }
@@ -117,22 +117,41 @@ public class PoemSequencePlayback : MonoBehaviour
     /****************************
      * Change Poem
      ***************************/
+    public void SetNextPoem(int _num)
+    {
+        nxtPoemNumber = _num;
+        print("Current poem state: " + crtPoemState);
+        if (crtPoemState == "in")
+        {
+            CancelInvoke("OutroMaskPlay");
+            isDirectOutro = true;
+        } else if (crtPoemState == "idle")
+        {
+            isDirectOutro = true;
+            CancelInvoke("OutroMaskPlay");
+            OutroMaskPlay();
+        } else if (crtPoemState == "out")
+        {
+
+        } else if (crtPoemState == "end")
+        {
+            ChangePoem(nxtPoemNumber);
+        }
+    }
+
     public void ChangePoem(int _num)
     {
-        poemNumber = _num;
+        crtPoemState = "in";
+        isDirectOutro = false;
+        crtPoemNumber = _num;
         ResetMaskPlay();
-        texture = (Texture)Resources.Load(baseName + poemNumber.ToString("D2") + "_00000", typeof(Texture));
+        texture = (Texture)Resources.Load(baseName + crtPoemNumber.ToString("D2") + "_00000", typeof(Texture));
         goMaterial.mainTexture = this.texture;
         Invoke("IntroMaskPlay", introDelayTime);
         StopAllCoroutines();
     }
 
-    IEnumerator OutroMaskAutoplay()
-    {
-        yield return new WaitForSeconds(poemIdleTime);
-        OutroMaskPlay();
-    }
-
+    
     /****************************
      * Sequence play method
      ***************************/
@@ -144,6 +163,13 @@ public class PoemSequencePlayback : MonoBehaviour
         {
             ++inFrameCounter;
         }
+        if (inFrameCounter == introMaskTextures.Length - 1  && !isDirectOutro)
+        {
+            crtPoemState = "idle";
+        } else if (inFrameCounter == introMaskTextures.Length - 1 && isDirectOutro)
+        {
+            OutroMaskPlay();
+        }
         StopCoroutine("PlayIntroMask");
     }
 
@@ -151,9 +177,18 @@ public class PoemSequencePlayback : MonoBehaviour
     IEnumerator PlayOutroMask()
     {
         yield return new WaitForSeconds(delayTime);
-        if (outFrameCounter < introMaskTextures.Length - 1)
+        if (outFrameCounter < outroMaskTextures.Length - 1)
         {
             ++outFrameCounter;
+        }
+        if (outFrameCounter == outroMaskTextures.Length - 1 && !isDirectOutro)
+        {
+            crtPoemState = "end";
+        }
+        if (outFrameCounter == outroMaskTextures.Length - 1 && isDirectOutro)
+        {
+            isDirectOutro = false;
+            ChangePoem(nxtPoemNumber);
         }
         StopCoroutine("PlayOutroMask");
     }
